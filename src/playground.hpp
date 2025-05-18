@@ -92,22 +92,26 @@ class Playground{
     int width;
     int height;
     int rectWidth;    
-    int rectHeight;    
+    int rectHeight;   
+    int dif; 
     std::vector<Pixel*> pixels;
     SDL_Rect* rects;
     
     void bordersManagement(Snake* s, int difficulty);
     //Collision getCollision(Snake* snake, Block* target);
+    void border1(Snake* s);
+    void border2(Snake* s);
 
     SDL_Window* win;
     SDL_Renderer* ren;
 
     public:
-    Playground(SDL_Window* window, SDL_Renderer* renderer, int width, int height);
+    Playground(SDL_Window* window, SDL_Renderer* renderer, int width, int height, int difficulty);
     Playground(int pixX, int pixY, int width, int height);
 
-    void update(Snake* snake);
+    void update(Snake* snake);    
     void update(Snake* snake, Block* target);
+    void update(Snake* snake, Block* target, int difficulty);
     void render();
     Collision getCollision(Snake* snake, Block* target);
     bool isTargetPosOK(Snake* snake, Block* target);

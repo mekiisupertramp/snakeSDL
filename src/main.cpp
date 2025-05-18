@@ -66,7 +66,9 @@ int main(int argc, char* argv[]) {
     // Show the cleared window
     SDL_RenderPresent(renderer);
 
-    Playground* play = new Playground(window,renderer,WIDTH,HEIGHT);
+    int difficulty=2;
+
+    Playground* play = new Playground(window,renderer,WIDTH,HEIGHT,difficulty);
     Snake* snake = new Snake();
     int points = 0;
     std::srand(std::time(nullptr)); 

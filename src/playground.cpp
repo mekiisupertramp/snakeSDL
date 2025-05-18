@@ -1,7 +1,7 @@
 #include "playground.hpp"
 #include <vector>
 
-//#define DEBUG
+#define DEBUG
 
 Pixel::Pixel(): posx(0), posy(0), activ(0), r(0), g(0), b(0){}
 Pixel::Pixel(int x, int y) : posx(x), posy(y){}
@@ -36,6 +36,10 @@ void Snake::addBlock(){
         break;
     }
 }
+// if each pos = &pos-1 => direction would be necessary only for the head no?
+// can't manage border properly like this because blocks go out of bounce
+// would be preferable that each current block gets the position of the next
+// from tail to head
 void Snake::updatePos(){   
     for(auto s : snake){
         switch(s->dir){
@@ -91,7 +95,7 @@ void Snake::debug(){
 }
 
 //Playground::Playground(int blockWidth, int blockHeight, int width, int height):win(window),ren(renderer),width(width),height(height)
-Playground::Playground(SDL_Window* window, SDL_Renderer* renderer, int width, int height):win(window),ren(renderer),width(width),height(height){
+Playground::Playground(SDL_Window* window, SDL_Renderer* renderer, int width, int height, int difficulty):win(window),ren(renderer),width(width),height(height),dif(difficulty){
     int w,h;
     SDL_GetWindowSize(window,&w, &h);
     rectWidth = w/width;
@@ -111,13 +115,13 @@ void Playground::render(){
         if(p->activ){            
             SDL_SetRenderDrawColor(ren, p->r, p->g, p->b, 255); 
             SDL_RenderFillRect(ren,&rect);
-            // SDL_SetRenderDrawColor(ren, LC, LC, LC, 255);
-            // SDL_RenderDrawRect(ren,&rect);  
+            SDL_SetRenderDrawColor(ren, LC, LC, LC, 255);
+            SDL_RenderDrawRect(ren,&rect);  
         }else{
             SDL_SetRenderDrawColor(ren, RPLAY, GPLAY, BPLAY, 255); 
             SDL_RenderFillRect(ren,&rect);
-            // SDL_SetRenderDrawColor(ren, LC, LC, LC, 255);
-            // SDL_RenderDrawRect(ren,&rect);  
+            SDL_SetRenderDrawColor(ren, LC, LC, LC, 255);
+            SDL_RenderDrawRect(ren,&rect);  
         }
     }
     SDL_RenderPresent(ren);
@@ -143,45 +147,52 @@ bool Playground::isTargetPosOK(Snake* snake, Block* target){
     return true;
 }
 
-void border1(Snake* s, int w, int h){
+void Playground::border1(Snake* s){
     for(auto s : s->getSnake()){
-        s->posx = (s->posx<0) ? w-1 : s->posx;
-        s->posx = (s->posx>w-1) ? 0: s->posx;
-        s->posy = (s->posy<0) ? h-1 : s->posy;
-        s->posy = (s->posy>h-1) ? 0: s->posy;
+        s->posx = (s->posx<0) ? width-1 : s->posx;
+        s->posx = (s->posx>width-1) ? 0: s->posx;
+        s->posy = (s->posy<0) ? height-1 : s->posy;
+        s->posy = (s->posy>height-1) ? 0: s->posy;
     }   
 }
-void border2(Snake* s, int w, int h){
-    for(auto s : s->getSnake()){
-        if((s->posx<0)&&(s->posy<0)){
-            s->posx = w-1;
-            s->posy = h-1;
+// SEGFAULT -> values posx/y out of width and height
+void Playground::border2(Snake* s){
+    int buff=0;
+    for(auto b : s->getSnake()){
+        if(b->posx>width-1){
+            buff = b->posx;
+            b->posx = b->posy;
+            b->posy = buff;
         }
-        if((s->posx<0)&&(s->posy>h-1)){
-            s->posx = w-1;
-            s->posy = 0;
+        if(b->posx<0){
+            buff = b->posx;
+            b->posx = b->posy;
+            b->posy = buff;
         }
-        if((s->posx>w-1)&&(s->posy<0)){
-            s->posx = 0;
-            s->posy = h-1;
+        if(b->posy<0){
+            buff = b->posx;
+            b->posx = b->posy;
+            b->posy = buff;
         }
-        if((s->posx>w-1)&&(s->posy>h-1)){
-            s->posx = 0;
-            s->posy = 0;
+        if(b->posy>height-1){
+            buff = b->posx;
+            b->posx = b->posy;
+            b->posy = buff;
         }
-
     }   
 }
 void Playground::bordersManagement(Snake* s, int difficulty){
-    // border1(s,width,height);
-    // border2(s,width,height);
     switch(difficulty){
         case 0:  break;
-        case 1: border1(s, width, height); break;
+        case 1: border1(s); break;
+        case 2: border2(s); break;
     }   
 }
 
-// this function should update pixels with the snake's position
+void Playground::update(Snake* snake, Block* target, int difficulty){
+    dif = difficulty;
+    update(snake,target);
+}
 void Playground::update(Snake* snake){  
     snake->updatePos();  
     snake->updateDir();
@@ -200,12 +211,11 @@ void Playground::update(Snake* snake){
     }
      
 }
-// FIX THIS METHOD !! 
-// TARGET IMPACT SNAKE'S RENDERING AND SOME BLOKS STAY ACTIVE
+
 void Playground::update(Snake* snake, Block* target){  
     snake->updatePos();  
     snake->updateDir();
-    bordersManagement(snake,1); // need difficulty level from main
+    bordersManagement(snake,dif);
 #ifdef DEBUG
     snake->debug();
 #endif
