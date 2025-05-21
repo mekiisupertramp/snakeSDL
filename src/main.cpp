@@ -22,9 +22,11 @@
 #define PIXELSX 600
 #define PIXELSY 600
 #define SPEED   100
-#define DIFFICULTY  0
+#define DIFFICULTY  3
 
 using namespace std;
+
+#define DEBUG
 
 
 int main(int argc, char* argv[]) {
@@ -97,12 +99,12 @@ int main(int argc, char* argv[]) {
     Snake* snake = new Snake();
     int points = 0;
     std::srand(std::time(nullptr)); 
-    Block* b = new Block(std::rand() % WIDTH, std::rand() % HEIGHT);
+    Block* b = new Block(std::rand() % w, std::rand() % h);
     b->activ = true;
     b->r = RTARG;
     b->g = GTARG;
     b->b = BTARG;
-    play->update(snake);
+    play->update(snake,b);
 
     SDL_SetRenderDrawColor(renderer, 50, 0, 0, 255);
     SDL_Event e;
@@ -140,8 +142,8 @@ int main(int argc, char* argv[]) {
                 snake->addBlock(); 
                 points++;         
                 while(!play->isTargetPosOK(snake,b)){
-                    b->posx = std::rand() % WIDTH;
-                    b->posy = std::rand() % HEIGHT;
+                    b->posx = std::rand() % w;
+                    b->posy = std::rand() % h;
                 }
 #ifdef DEBUG                
                 cout << "target x: " << b->posx << ", y: " << b->posy << endl;
