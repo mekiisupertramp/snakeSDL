@@ -1,7 +1,7 @@
 #include "playground.hpp"
 #include <vector>
 
-#define DEBUG
+//#define DEBUG
 
 Pixel::Pixel(): posx(0), posy(0), activ(0), r(0), g(0), b(0){}
 Pixel::Pixel(int x, int y) : posx(x), posy(y){}
@@ -50,6 +50,18 @@ void Snake::updatePos(){
         }        
     }
 }
+// void Snake::updatePos(){
+//     int bufPosx;
+//     int bufPosy;
+//     for(int i=snake.size()-1 ; i>0 ; i--){
+//         // current = current-1 or current+1
+//         // copy current for the next block!
+//         bufPosx = snake[i]->posx;
+//         bufPosy = snake[i]->posy;
+//         snake[i]->posx = snake[i-1]->posx;
+//         snake[i]->posy = snake[i-1]->posy;
+//     }
+// }
 std::vector<Block*> Snake::getSnake(){
     return snake;
 }
@@ -96,6 +108,7 @@ void Snake::debug(){
 
 //Playground::Playground(int blockWidth, int blockHeight, int width, int height):win(window),ren(renderer),width(width),height(height)
 Playground::Playground(SDL_Window* window, SDL_Renderer* renderer, int width, int height, int difficulty):win(window),ren(renderer),width(width),height(height),dif(difficulty){
+    std::srand(std::time(nullptr));
     int w,h;
     SDL_GetWindowSize(window,&w, &h);
     rectWidth = w/width;
@@ -124,6 +137,18 @@ void Playground::render(){
             SDL_RenderDrawRect(ren,&rect);  
         }
     }
+    if(dif == 0){
+        rect.x=0; rect.y=0;
+        rect.w = width*rectWidth;
+        rect.h = height*rectHeight;
+        SDL_SetRenderDrawColor(ren, 255, 0, 0, 255); 
+        SDL_RenderDrawRect(ren,&rect);
+        rect.x=1; rect.y=1;
+        rect.w = (width*rectWidth)-2;
+        rect.h = (height*rectHeight)-2;
+        SDL_SetRenderDrawColor(ren, 255, 0, 0, 255); 
+        SDL_RenderDrawRect(ren,&rect);
+    }
     SDL_RenderPresent(ren);
 }
 
@@ -134,8 +159,11 @@ Collision Playground::getCollision(Snake* snake, Block* target){
 
     for(int i=1 ; i<snake->getSnake().size() ; i++){   
         if((head->posx==s[i]->posx)&&(head->posy==s[i]->posy)) return SNAKE;  
-        if((s[i]->posx>width)||(s[i]->posx<0)||(s[i]->posy>height)||(s[i]->posy<0)) return WALL;   
-    }  
+        //if((s[i]->posx>width)||(s[i]->posx<0)||(s[i]->posy>height)||(s[i]->posy<0)) return WALL;   
+    } 
+    if((head->posx<0)||(head->posx>width-1)|| (head->posy<0)||(head->posy>height-1)) {
+        return WALL; 
+    }
     
     return NONE;
 }
@@ -147,6 +175,12 @@ bool Playground::isTargetPosOK(Snake* snake, Block* target){
     return true;
 }
 
+void Playground::border0(Snake* s){
+    for(auto s : s->getSnake()){
+        if((s->posx<0)&&(s->posx>width)) s->activ = false;
+        if((s->posy<0)&&(s->posy>height)) s->activ = false;
+    }
+}
 void Playground::border1(Snake* s){
     for(auto s : s->getSnake()){
         s->posx = (s->posx<0) ? width-1 : s->posx;
@@ -155,37 +189,56 @@ void Playground::border1(Snake* s){
         s->posy = (s->posy>height-1) ? 0: s->posy;
     }   
 }
-// SEGFAULT -> values posx/y out of width and height
+
 void Playground::border2(Snake* s){
-    int buff=0;
     for(auto b : s->getSnake()){
-        if(b->posx>width-1){
-            buff = b->posx;
-            b->posx = b->posy;
-            b->posy = buff;
+        if((b->posx<0)&&(b->posy==0)){
+            b->posx = width-1;
+            b->posy = height-1;
+            b->dir = LEFT;
         }
+        if((b->posx<0)&&(b->posy==height-1)){
+            b->posx = width-1;
+            b->posy = 0;
+            b->dir = LEFT;
+        }
+
         if(b->posx<0){
-            buff = b->posx;
             b->posx = b->posy;
-            b->posy = buff;
+            b->posy = 0;
+            b->dir = BOTTOM;
         }
-        if(b->posy<0){
-            buff = b->posx;
+        if(b->posx>width-1){
             b->posx = b->posy;
-            b->posy = buff;
+            b->posy = height-1;
+            b->dir = TOP;
         }
         if(b->posy>height-1){
-            buff = b->posx;
-            b->posx = b->posy;
-            b->posy = buff;
+            b->posy = b->posx;
+            b->posx = width-1;            
+            b->dir = LEFT;
+        }
+        if(b->posy<0){
+            b->posy = b->posx;
+            b->posx = 0;            
+            b->dir = RIGHT;
         }
     }   
 }
+void Playground::border3(Snake* s){
+    Block* head = s->getHead();
+    // random snake's head, and propagate to the others
+    while((head->posx<0)||(head->posx>width-1)||(head->posy<0)||(head->posy>height-1)){
+        head->posx = std::rand() % width;
+        head->posy = std::rand() % height;
+    }
+}
 void Playground::bordersManagement(Snake* s, int difficulty){
     switch(difficulty){
-        case 0:  break;
+        case 0: border0(s); break;
         case 1: border1(s); break;
         case 2: border2(s); break;
+        case 3: border3(s); break; 
     }   
 }
 
@@ -196,7 +249,7 @@ void Playground::update(Snake* snake, Block* target, int difficulty){
 void Playground::update(Snake* snake){  
     snake->updatePos();  
     snake->updateDir();
-    bordersManagement(snake,1); // need difficulty level from main
+    bordersManagement(snake,dif); // need difficulty level from main
 #ifdef DEBUG
     snake->debug();
 #endif
@@ -204,6 +257,10 @@ void Playground::update(Snake* snake){
         p->activ=false;
     }
     for(auto s: snake->getSnake()){
+        if(s->posx<0) break; // prevent bad access to pixels
+        if(s->posy<0) break;
+        if(s->posx>width-1) break;
+        if(s->posy>height-1) break;
         pixels[s->posx+s->posy*width]->activ = s->activ;
         pixels[s->posx+s->posy*width]->r = s->r;
         pixels[s->posx+s->posy*width]->g = s->g;
@@ -230,6 +287,10 @@ void Playground::update(Snake* snake, Block* target){
         }
     }
     for(auto s: snake->getSnake()){
+        if(s->posx<0) break; // prevent bad access to pixels
+        if(s->posy<0) break;
+        if(s->posx>width-1) break;
+        if(s->posy>height-1) break;
         pixels[s->posx+s->posy*width]->activ = s->activ;
         pixels[s->posx+s->posy*width]->r = s->r;
         pixels[s->posx+s->posy*width]->g = s->g;

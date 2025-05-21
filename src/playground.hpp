@@ -11,6 +11,7 @@
 #include <unistd.h>
 #include <math.h>
 #include <vector>
+#include <random>
 #include <SDL2/SDL.h>
 
 #define RSNAKE  100
@@ -31,6 +32,9 @@
 
 #define LC  255 // lines color
 
+// delete Block class
+// add direction here
+// change Pixel into Square
 class Pixel{
     public:
     int posx;
@@ -95,12 +99,14 @@ class Playground{
     int rectHeight;   
     int dif; 
     std::vector<Pixel*> pixels;
-    SDL_Rect* rects;
+    SDL_Rect* rects;    
     
     void bordersManagement(Snake* s, int difficulty);
     //Collision getCollision(Snake* snake, Block* target);
+    void border0(Snake* s);
     void border1(Snake* s);
     void border2(Snake* s);
+    void border3(Snake* s);
 
     SDL_Window* win;
     SDL_Renderer* ren;
