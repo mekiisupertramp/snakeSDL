@@ -1,7 +1,7 @@
 #include "playground.hpp"
 #include <vector>
 
-//#define DEBUG
+#define DEBUG
 
 Pixel::Pixel(): posx(0), posy(0), activ(0), r(0), g(0), b(0){}
 Pixel::Pixel(int x, int y) : posx(x), posy(y){}
@@ -226,11 +226,34 @@ void Playground::border2(Snake* s){
     }   
 }
 void Playground::border3(Snake* s){
-    Block* head = s->getHead();
-    // random snake's head, and propagate to the others
-    while((head->posx<0)||(head->posx>width-1)||(head->posy<0)||(head->posy>height-1)){
-        head->posx = std::rand() % width;
-        head->posy = std::rand() % height;
+    Block* head = s->getHead();    
+    int w = std::rand() % 4;
+    // random snake's head position
+    if((head->posx<0)||(head->posx>width-1)||(head->posy<0)||(head->posy>height-1)){
+        switch (w){
+            case 0: head->posx = 0; head->posy = std::rand()%height; head->dir = RIGHT; break;
+            case 1: head->posx = std::rand() % width; head->posy = height-1; head->dir = TOP; break;
+            case 2: head->posx = width-1; head->posy = std::rand()%height; head->dir = LEFT; break;
+            case 3: head->posx = std::rand() % width; head->posy = 0; head->dir = BOTTOM; break;            
+            default: break;
+        }
+    }
+
+    // distribute position from head
+    for(int i=1 ; i<s->getSnake().size() ; i++){
+        if((s->getSnake()[i]->posx<0)||(s->getSnake()[i]->posx>width-1)||(s->getSnake()[i]->posy<0)||(s->getSnake()[i]->posy>height-1)){
+            s->getSnake()[i]->posx = s->getSnake()[i-1]->posx;
+            s->getSnake()[i]->posy = s->getSnake()[i-1]->posy;
+            s->getSnake()[i]->dir = s->getSnake()[i-1]->dir;
+
+            // needed because snake's position is updated before borders are assess
+            switch(s->getSnake()[i]->dir){
+                case RIGHT: s->getSnake()[i]->posx -=1; break;
+                case LEFT: s->getSnake()[i]->posx +=1; break;
+                case TOP: s->getSnake()[i]->posy +=1; break;
+                case BOTTOM: s->getSnake()[i]->posy -=1; break;
+            }
+        }
     }
 }
 void Playground::bordersManagement(Snake* s, int difficulty){
