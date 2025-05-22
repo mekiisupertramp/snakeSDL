@@ -151,7 +151,7 @@ int main(int argc, char* argv[]) {
                 play->render();  
             }else{
                 if(play->getCollision(snake,b) == SNAKE) {
-                    cout << "Game over!" << endl;
+                    cout << "Game over! You bit yourself!" << endl;
                     cout << "You won " << points << " points." << endl;
                     running = false;
                 }else{
