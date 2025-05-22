@@ -225,16 +225,18 @@ void Playground::border2(Snake* s){
         }
     }   
 }
+// bug somwhere because [1] get same position as [0]
 void Playground::border3(Snake* s){
     Block* head = s->getHead();    
     int w = std::rand() % 4;
     // random snake's head position
+    // get a new position and avoid previous one
     if((head->posx<0)||(head->posx>width-1)||(head->posy<0)||(head->posy>height-1)){
         switch (w){
-            case 0: head->posx = 0; head->posy = std::rand()%height; head->dir = RIGHT; break;
-            case 1: head->posx = std::rand() % width; head->posy = height-1; head->dir = TOP; break;
-            case 2: head->posx = width-1; head->posy = std::rand()%height; head->dir = LEFT; break;
-            case 3: head->posx = std::rand() % width; head->posy = 0; head->dir = BOTTOM; break;            
+            case 0: head->posx = 0; head->dir = RIGHT; do{w = std::rand()%height;}while(w == head->posy); head->posy=w; break;
+            case 1: head->posy = height-1; head->dir = TOP; do{w = std::rand() % width;}while(w == head->posx); head->posx=w; break;
+            case 2: head->posx = width-1; head->dir = LEFT; do{w = std::rand()%height;}while(w == head->posy); head->posy=w; break;
+            case 3: head->posy = 0; head->dir = BOTTOM; do{w = std::rand()%width;}while(w ==head->posx); head->posx=w; break;            
             default: break;
         }
     }
