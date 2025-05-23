@@ -3,36 +3,49 @@
 
 #define DEBUG
 
-Square::Square(): posx(0), posy(0), activ(0), r(0), g(0), b(0){}
-Square::Square(int x, int y) : posx(x), posy(y){}
-Square::Square(int x, int y, int active): posx(x), posy(y), activ(active){}
-Square::Square(int x, int y, int active, int r, int g, int b): posx(x), posy(y), activ(active), r(r), g(g), b(b){}
+Square::Square(): posx(0), posy(0), activ(0), r(RPLAY), g(BPLAY), b(GPLAY){}
+Square::Square(int x, int y) : Square(){
+    posx = x;
+    posy = y;    
+}
+Square::Square(int x, int y, Direction di) : Square(x,y){
+    activ=1;
+    r=RSNAKE; 
+    b=BSNAKE; 
+    g=GSNAKE;
+    dir=di;    
+}
+Square::Square(int x, int y, int r, int g, int b) : Square(x,y){
+    activ=0;
+    this->r=r;
+    this->g=g;
+    this->b=b;
+}
 
-Block::Block() : Square(){r=RSNAKE; b=BSNAKE; g=GSNAKE;}
-Block::Block(int x, int y) : Square(x,y,true){r=RSNAKE; b=BSNAKE; g=GSNAKE;dir=RIGHT;}
-Block::Block(int x, int y, Direction di) : Square(x,y,true){r=RSNAKE; b=BSNAKE; g=GSNAKE;dir=di;}
 
 Snake::Snake(){
-    snake.push_back(new Block(6,3,RIGHT));
+    snake.push_back(new Square(6,3,RIGHT));
     snake[0]->r = RSNAKE2;    
     snake[0]->g = GSNAKE2;    
     snake[0]->b = BSNAKE2;    
 }
-Block* Snake::getHead(){return snake[0];}
+
+
+Square* Snake::getHead(){return snake[0];}
 void Snake::addBlock(){  
-    Block* tail = snake[snake.size()-1];
+    Square* tail = snake[snake.size()-1];
     switch(tail->dir){
         case TOP:
-        snake.push_back(new Block(tail->posx,tail->posy+1,tail->dir));
+        snake.push_back(new Square(tail->posx,tail->posy+1,tail->dir));
         break;
         case BOTTOM:
-        snake.push_back(new Block(tail->posx,tail->posy-1,tail->dir));
+        snake.push_back(new Square(tail->posx,tail->posy-1,tail->dir));
         break;
         case RIGHT:
-        snake.push_back(new Block(tail->posx-1,tail->posy,tail->dir));
+        snake.push_back(new Square(tail->posx-1,tail->posy,tail->dir));
         break;
         case LEFT:
-        snake.push_back(new Block(tail->posx+1,tail->posy,tail->dir));
+        snake.push_back(new Square(tail->posx+1,tail->posy,tail->dir));
         break;
     }
 }
@@ -62,7 +75,7 @@ void Snake::updatePos(){
 //         snake[i]->posy = snake[i-1]->posy;
 //     }
 // }
-std::vector<Block*> Snake::getSnake(){
+std::vector<Square*> Snake::getSnake(){
     return snake;
 }
 void Snake::setDir(Direction dir){
@@ -80,7 +93,7 @@ void Snake::updateDir(){
     
     // get values in dirs[], and skip the wrong ones
     bool found = false;
-    Block* head = snake[0];   
+    Square* head = snake[0];   
     Direction dir;    
 
     while(!found){
@@ -96,9 +109,9 @@ void Snake::updateDir(){
     }
 }
 void Snake::debug(){
-    std::cout << "--------- snake's block ---------" << std::endl;
+    std::cout << "--------- snake's Square ---------" << std::endl;
     for(int i=0 ; i<snake.size() ; i++){        
-        std::cout << "block " << i << ": posX: " << snake[i]->posx << " posY: " << 
+        std::cout << "Square " << i << ": posX: " << snake[i]->posx << " posY: " << 
         snake[i]->posy << " dir: " << snake[i]->dir << std::endl;
     }
     for(int i=0 ; i<dirs.size() ; i++){
@@ -106,8 +119,7 @@ void Snake::debug(){
     }
 }
 
-//Playground::Playground(int blockWidth, int blockHeight, int width, int height):win(window),ren(renderer),width(width),height(height)
-Playground::Playground(SDL_Window* window, SDL_Renderer* renderer, int width, int height, int difficulty):win(window),ren(renderer),width(width),height(height),dif(difficulty){
+Playground::Playground(SDL_Window* window, SDL_Renderer* renderer, int width, int height, int difficulty):ren(renderer),width(width),height(height),dif(difficulty){
     std::srand(std::time(nullptr));
     int w,h;
     SDL_GetWindowSize(window,&w, &h);
@@ -115,7 +127,7 @@ Playground::Playground(SDL_Window* window, SDL_Renderer* renderer, int width, in
     rectHeight = h/height;   
     for(int y=0 ; y<height ; y++){
         for(int x=0 ; x<width ; x++){
-            pixels.push_back(new Square(x,y,false,RPLAY,GPLAY,BPLAY));
+            pixels.push_back(new Square(x,y,RPLAY,GPLAY,BPLAY));
         }
     } 
 }
@@ -152,9 +164,9 @@ void Playground::render(){
     SDL_RenderPresent(ren);
 }
 
-Collision Playground::getCollision(Snake* snake, Block* target){
-    Block* head = snake->getHead();
-    std::vector<Block*> s = snake->getSnake();
+Collision Playground::getCollision(Snake* snake, Square* target){
+    Square* head = snake->getHead();
+    std::vector<Square*> s = snake->getSnake();
     if((head->posx==target->posx)&&(head->posy==target->posy)) return TARGET;
 
     for(int i=1 ; i<snake->getSnake().size() ; i++){   
@@ -167,8 +179,8 @@ Collision Playground::getCollision(Snake* snake, Block* target){
     
     return NONE;
 }
-bool Playground::isTargetPosOK(Snake* snake, Block* target){
-    std::vector<Block*> sn = snake->getSnake();
+bool Playground::isTargetPosOK(Snake* snake, Square* target){
+    std::vector<Square*> sn = snake->getSnake();
     for(auto s : sn){
         if((s->posx==target->posx)&&(s->posy==target->posy)) return false;
     }
@@ -227,7 +239,7 @@ void Playground::border2(Snake* s){
 }
 // bug somwhere because [1] get same position as [0]
 void Playground::border3(Snake* s){
-    Block* head = s->getHead();    
+    Square* head = s->getHead();    
     int w = std::rand() % 4;
     // random snake's head position
     // get a new position and avoid previous one
@@ -267,7 +279,7 @@ void Playground::bordersManagement(Snake* s, int difficulty){
     }   
 }
 
-void Playground::update(Snake* snake, Block* target, int difficulty){
+void Playground::update(Snake* snake, Square* target, int difficulty){
     dif = difficulty;
     update(snake,target);
 }
@@ -294,7 +306,7 @@ void Playground::update(Snake* snake){
      
 }
 
-void Playground::update(Snake* snake, Block* target){  
+void Playground::update(Snake* snake, Square* target){  
     snake->updatePos();  
     snake->updateDir();
     bordersManagement(snake,dif);

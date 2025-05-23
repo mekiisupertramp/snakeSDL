@@ -99,7 +99,7 @@ int main(int argc, char* argv[]) {
     Snake* snake = new Snake();
     int points = 0;
     std::srand(std::time(nullptr)); 
-    Block* b = new Block(std::rand() % w, std::rand() % h);
+    Square* b = new Square(std::rand() % w, std::rand() % h);
     b->activ = true;
     b->r = RTARG;
     b->g = GTARG;

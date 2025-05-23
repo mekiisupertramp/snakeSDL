@@ -32,9 +32,13 @@
 
 #define LC  255 // lines color
 
-// delete Block class
-// add direction here
-// change Pixel into Square
+enum Direction{
+    TOP, 
+    BOTTOM,
+    LEFT,
+    RIGHT
+};
+
 class Square{
     public:
     int posx;
@@ -43,35 +47,18 @@ class Square{
     int r;
     int g;
     int b;
-
-    Square();
-    Square(int x, int y);
-    Square(int x, int y, int active);
-    Square(int x, int y, int active, int r, int g, int b);
-};
-
-enum Direction{
-    TOP, 
-    BOTTOM,
-    LEFT,
-    RIGHT
-};
-class Block: public Square{
-    private:    
-    public:
     Direction dir;
 
-    Block();
-    Block(int x, int y);
-    Block(int x, int y, Direction di);
+    Square();
+    Square(int x, int y);     
+    Square(int x, int y, int r, int g, int b);
+    Square(int x, int y, Direction di);
 };
 
 class Snake{
     private:
-    std::vector<Block*> snake;
+    std::vector<Square*> snake;
     std::vector<Direction> dirs;
-    void insertPosition(int x, int y, Direction d);    
-    void setPos(int x, int y);
     
     public:
     Snake();    
@@ -79,8 +66,8 @@ class Snake{
     void updateDir();
     void updatePos();
     void setDir(Direction dir);
-    std::vector<Block*> getSnake();
-    Block* getHead();
+    std::vector<Square*> getSnake();
+    Square* getHead();
     void debug();
 };
 
@@ -93,34 +80,31 @@ enum Collision{
 
 class Playground{
     private: 
+    SDL_Renderer* ren;
     int width;
     int height;
     int rectWidth;    
     int rectHeight;   
     int dif; 
     std::vector<Square*> pixels;
-    SDL_Rect* rects;    
+    //SDL_Rect* rects;    
     
     void bordersManagement(Snake* s, int difficulty);
-    //Collision getCollision(Snake* snake, Block* target);
     void border0(Snake* s);
     void border1(Snake* s);
     void border2(Snake* s);
     void border3(Snake* s);
-
-    SDL_Window* win;
-    SDL_Renderer* ren;
+    
 
     public:
     Playground(SDL_Window* window, SDL_Renderer* renderer, int width, int height, int difficulty);
-    Playground(int pixX, int pixY, int width, int height);
 
     void update(Snake* snake);    
-    void update(Snake* snake, Block* target);
-    void update(Snake* snake, Block* target, int difficulty);
+    void update(Snake* snake, Square* target);
+    void update(Snake* snake, Square* target, int difficulty);
     void render();
-    Collision getCollision(Snake* snake, Block* target);
-    bool isTargetPosOK(Snake* snake, Block* target);
+    Collision getCollision(Snake* snake, Square* target);
+    bool isTargetPosOK(Snake* snake, Square* target);
 };
 
 
