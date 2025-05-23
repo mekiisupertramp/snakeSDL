@@ -35,7 +35,7 @@
 // delete Block class
 // add direction here
 // change Pixel into Square
-class Pixel{
+class Square{
     public:
     int posx;
     int posy;
@@ -44,10 +44,10 @@ class Pixel{
     int g;
     int b;
 
-    Pixel();
-    Pixel(int x, int y);
-    Pixel(int x, int y, int active);
-    Pixel(int x, int y, int active, int r, int g, int b);
+    Square();
+    Square(int x, int y);
+    Square(int x, int y, int active);
+    Square(int x, int y, int active, int r, int g, int b);
 };
 
 enum Direction{
@@ -56,7 +56,7 @@ enum Direction{
     LEFT,
     RIGHT
 };
-class Block: public Pixel{
+class Block: public Square{
     private:    
     public:
     Direction dir;
@@ -98,7 +98,7 @@ class Playground{
     int rectWidth;    
     int rectHeight;   
     int dif; 
-    std::vector<Pixel*> pixels;
+    std::vector<Square*> pixels;
     SDL_Rect* rects;    
     
     void bordersManagement(Snake* s, int difficulty);

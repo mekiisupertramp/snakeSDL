@@ -3,14 +3,14 @@
 
 #define DEBUG
 
-Pixel::Pixel(): posx(0), posy(0), activ(0), r(0), g(0), b(0){}
-Pixel::Pixel(int x, int y) : posx(x), posy(y){}
-Pixel::Pixel(int x, int y, int active): posx(x), posy(y), activ(active){}
-Pixel::Pixel(int x, int y, int active, int r, int g, int b): posx(x), posy(y), activ(active), r(r), g(g), b(b){}
+Square::Square(): posx(0), posy(0), activ(0), r(0), g(0), b(0){}
+Square::Square(int x, int y) : posx(x), posy(y){}
+Square::Square(int x, int y, int active): posx(x), posy(y), activ(active){}
+Square::Square(int x, int y, int active, int r, int g, int b): posx(x), posy(y), activ(active), r(r), g(g), b(b){}
 
-Block::Block() : Pixel(){r=RSNAKE; b=BSNAKE; g=GSNAKE;}
-Block::Block(int x, int y) : Pixel(x,y,true){r=RSNAKE; b=BSNAKE; g=GSNAKE;dir=RIGHT;}
-Block::Block(int x, int y, Direction di) : Pixel(x,y,true){r=RSNAKE; b=BSNAKE; g=GSNAKE;dir=di;}
+Block::Block() : Square(){r=RSNAKE; b=BSNAKE; g=GSNAKE;}
+Block::Block(int x, int y) : Square(x,y,true){r=RSNAKE; b=BSNAKE; g=GSNAKE;dir=RIGHT;}
+Block::Block(int x, int y, Direction di) : Square(x,y,true){r=RSNAKE; b=BSNAKE; g=GSNAKE;dir=di;}
 
 Snake::Snake(){
     snake.push_back(new Block(6,3,RIGHT));
@@ -115,7 +115,7 @@ Playground::Playground(SDL_Window* window, SDL_Renderer* renderer, int width, in
     rectHeight = h/height;   
     for(int y=0 ; y<height ; y++){
         for(int x=0 ; x<width ; x++){
-            pixels.push_back(new Pixel(x,y,false,RPLAY,GPLAY,BPLAY));
+            pixels.push_back(new Square(x,y,false,RPLAY,GPLAY,BPLAY));
         }
     } 
 }
