@@ -50,6 +50,7 @@ class Square{
     Direction dir;
 
     Square();
+    ~Square() = default;
     Square(int x, int y);     
     Square(int x, int y, int r, int g, int b);
     Square(int x, int y, Direction di);
@@ -61,7 +62,8 @@ class Snake{
     std::vector<Direction> dirs;
     
     public:
-    Snake();    
+    Snake();
+    ~Snake();    
     void addBlock();
     void updateDir();
     void updatePos();
@@ -87,7 +89,6 @@ class Playground{
     int rectHeight;   
     int dif; 
     std::vector<Square*> pixels;
-    //SDL_Rect* rects;    
     
     void bordersManagement(Snake* s, int difficulty);
     void border0(Snake* s);
@@ -98,6 +99,7 @@ class Playground{
 
     public:
     Playground(SDL_Window* window, SDL_Renderer* renderer, int width, int height, int difficulty);
+    ~Playground();
 
     void update(Snake* snake);    
     void update(Snake* snake, Square* target);

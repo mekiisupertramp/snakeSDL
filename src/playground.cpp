@@ -30,6 +30,12 @@ Snake::Snake(){
     snake[0]->b = BSNAKE2;    
 }
 
+Snake::~Snake(){
+    dirs.clear();
+    for(auto s: snake){
+        delete s;
+    }
+}
 
 Square* Snake::getHead(){return snake[0];}
 void Snake::addBlock(){  
@@ -118,7 +124,11 @@ void Snake::debug(){
         std::cout << "dir" << i << " = " << dirs[i] << std::endl;
     }
 }
-
+Playground::~Playground(){
+    for(auto p : pixels){
+        delete p;
+    }
+}
 Playground::Playground(SDL_Window* window, SDL_Renderer* renderer, int width, int height, int difficulty):ren(renderer),width(width),height(height),dif(difficulty){
     std::srand(std::time(nullptr));
     int w,h;
@@ -170,8 +180,7 @@ Collision Playground::getCollision(Snake* snake, Square* target){
     if((head->posx==target->posx)&&(head->posy==target->posy)) return TARGET;
 
     for(int i=1 ; i<snake->getSnake().size() ; i++){   
-        if((head->posx==s[i]->posx)&&(head->posy==s[i]->posy)) return SNAKE;  
-        //if((s[i]->posx>width)||(s[i]->posx<0)||(s[i]->posy>height)||(s[i]->posy<0)) return WALL;   
+        if((head->posx==s[i]->posx)&&(head->posy==s[i]->posy)) return SNAKE;   
     } 
     if((head->posx<0)||(head->posx>width-1)|| (head->posy<0)||(head->posy>height-1)) {
         return WALL; 
