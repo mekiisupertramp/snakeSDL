@@ -12,8 +12,9 @@
 #include <SDL2/SDL.h>
 #include <cstdlib>
 #include <random>
-//#include <SDL2/SDL_main.h>
+#include <ctime>
 #include "playground.hpp"
+#include "graphic.hpp"
 
 
 // default values
@@ -50,6 +51,7 @@ int main(int argc, char* argv[]) {
         }else{
             cout << "Here is the arguments you must use." << endl;
             cout << "./main <squares in x> <squares in y> <width in pixels> <height in pixels> <period in ms> <difficulty>" << endl;
+            return 0;
         }
     }    
 
@@ -59,7 +61,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // Create a window
+    //Create a window
     SDL_Window* window = SDL_CreateWindow(
         "Snake",             // window title
         SDL_WINDOWPOS_CENTERED,           // initial x position
@@ -85,18 +87,11 @@ int main(int argc, char* argv[]) {
         SDL_Quit();
         return 1;
     }
+      
 
-    // Set draw color to black (R, G, B, A)
-    SDL_SetRenderDrawColor(renderer, 50, 0, 0, 255);
-
-    // Clear the window (fills it with the draw color)
-    SDL_RenderClear(renderer);
-
-    // Show the cleared window
-    SDL_RenderPresent(renderer);        
-
-    Playground* play = new Playground(window,renderer,w,h,difficulty);
+    Playground* play = new Playground(w,h,difficulty);
     Snake* snake = new Snake();
+    Graphic* graph = new Graphic(window,renderer);
     int points = 0;
     std::srand(std::time(nullptr)); 
     Square* b = new Square(std::rand() % w, std::rand() % h);
@@ -106,7 +101,7 @@ int main(int argc, char* argv[]) {
     b->b = BTARG;
     play->update(snake,b);
 
-    SDL_SetRenderDrawColor(renderer, 50, 0, 0, 255);
+
     SDL_Event e;
     bool running = true;
     int cpt=0;
@@ -148,7 +143,7 @@ int main(int argc, char* argv[]) {
 #ifdef DEBUG                
                 cout << "target x: " << b->posx << ", y: " << b->posy << endl;
 #endif
-                play->render();  
+                graph->render(play->getPixels(),w,h,difficulty);
             }else{
                 if(play->getCollision(snake,b) == SNAKE) {
                     cout << "Game over! You bit yourself!" << endl;
@@ -160,7 +155,7 @@ int main(int argc, char* argv[]) {
                         cout << "You won " << points << " points." << endl;
                         running = false;
                     }else{
-                        play->render();  
+                        graph->render(play->getPixels(),w,h,difficulty);
                     }
                 }
             }              
@@ -170,7 +165,11 @@ int main(int argc, char* argv[]) {
         SDL_Delay(speed);  // milliseconds
     }    
 
-    // Clean up
+    delete snake;
+    delete play;
+    delete b;
+    
+    // Clean up    
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
