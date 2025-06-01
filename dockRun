@@ -1,21 +1,14 @@
-#!/bin/bash
+# #!/bin/bash
 
-#xhost +
+# #xhost +
 
 ARGS="$*"
 
 docker run -it --rm \
-  --name mesa_test \
   -e DISPLAY=host.docker.internal:0 \
-  -e MESA_DIR=/home/docker/mesa \
-  -e VALGRIND_LIB=/home/docker/mesasdk/lib/valgrind \
-  -e MESASDK_ROOT=/home/docker/mesasdk \
-  -e SHLVL=1 \
-  -e PGPLOT_DIR=/home/docker/mesasdk/lib/pgplot \
-  -v /Users/mehmedblazevic/.Xauthority:/root/.Xauthority \
+  -v /tmp/.X11-unix:/tmp/.X11-unix \
   -v /Users/mehmedblazevic/Desktop/Projects/BlazeCorp/Projects/snakeSDL/workspace/software/snakeSDL/src/:/app/src \
   -v /Users/mehmedblazevic/Desktop/Projects/BlazeCorp/Projects/snakeSDL/workspace/software/snakeSDL/Makefile:/app/Makefile \
   -w /app \
-  snake_mesa_2
-  #evbauer/mesa_lean:r24.03.1.01
-  #bash -lc "make && ./build/main $ARGS"
+  snake_sdl
+

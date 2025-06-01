@@ -168,6 +168,7 @@ int main(int argc, char* argv[]) {
     delete snake;
     delete play;
     delete b;
+    delete graph;
     
     // Clean up    
     SDL_DestroyRenderer(renderer);

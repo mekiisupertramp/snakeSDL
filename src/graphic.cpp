@@ -9,49 +9,8 @@ Graphic::Graphic(SDL_Window* window, SDL_Renderer* renderer) : window(window), r
     SDL_RenderPresent(renderer);  
 }
 
-// Graphic::Graphic(std::string name, int widthPix, int heigthPix){
-
-//     // // Initialize SDL's video subsystem
-//     // if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-//     //     std::cerr << "SDL_Init Error: " << SDL_GetError() << std::endl;
-//     // }
-
-//     // SDL_Window* window = SDL_CreateWindow(
-//     //     name.c_str(),              // window title
-//     //     SDL_WINDOWPOS_CENTERED,     // initial x position
-//     //     SDL_WINDOWPOS_CENTERED,     // initial y position
-//     //     widthPix,                   // width, in pixels
-//     //     heigthPix,                  // height, in pixels
-//     //     SDL_WINDOW_SHOWN            // flags
-//     // );
-//     // if (!window) {
-//     //     std::cerr << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
-//     //     SDL_Quit();
-//     // }
-
-//     // // Create a renderer (hardware-accelerated)
-//     // SDL_Renderer* renderer = SDL_CreateRenderer(
-//     //     window, -1,
-//     //     SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC
-//     // );
-//     // if (!renderer) {
-//     //     std::cerr << "SDL_CreateRenderer Error: " << SDL_GetError() << std::endl;
-//     //     SDL_DestroyWindow(window);
-//     //     SDL_Quit();
-//     // }
-
-//     // // Set draw color to black (R, G, B, A)
-//     // SDL_SetRenderDrawColor(renderer, 50, 0, 0, 255);
-
-//     // // Clear the window (fills it with the draw color)
-//     // SDL_RenderClear(renderer);
-
-//     // // Show the cleared window
-//     // SDL_RenderPresent(renderer);
-
-// }
-
 Graphic::~Graphic(){}    
+
 void Graphic::render(std::vector<Square*> pixels, int width, int height, int box){   
     int x, y;
     SDL_GetWindowSize(window, &x, &y);

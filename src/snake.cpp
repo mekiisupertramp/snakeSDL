@@ -97,11 +97,11 @@ void Snake::updateDir(){
 }
 void Snake::debug(){
     std::cout << "--------- snake's Square ---------" << std::endl;
-    for(int i=0 ; i<snake.size() ; i++){        
+    for(int i=0 ; (size_t)i<snake.size() ; i++){        
         std::cout << "Square " << i << ": posX: " << snake[i]->posx << " posY: " << 
         snake[i]->posy << " dir: " << snake[i]->dir << std::endl;
     }
-    for(int i=0 ; i<dirs.size() ; i++){
+    for(int i=0 ; (size_t)i<dirs.size() ; i++){
         std::cout << "dir" << i << " = " << dirs[i] << std::endl;
     }
 }

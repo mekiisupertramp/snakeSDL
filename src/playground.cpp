@@ -3,7 +3,7 @@
 
 #define DEBUG
 
-Playground::Playground(/*SDL_Window* windowint wPxs, int hPxs, */int width, int height, int difficulty):width(width),height(height),dif(difficulty){
+Playground::Playground(int width, int height, int difficulty):width(width),height(height),dif(difficulty){
     std::srand(std::time(nullptr)); 
     for(int y=0 ; y<height ; y++){
         for(int x=0 ; x<width ; x++){
@@ -19,20 +19,14 @@ Playground::~Playground(){
 std::vector<Square*> Playground::getPixels(){return pixels;}
 int Playground::getWidth(){return width;}
 int Playground::getHeigth(){return height;}
-// int Playground::getRWidth(){return pxWidth;}
-// int Playground::getRHeight(){return pxHeight;}
 int Playground::getDifficulty(){return dif;}
-
-// std::vector<SDL_Rect> Playground::getRects(){
-//     return 0;
-// }
 
 Collision Playground::getCollision(Snake* snake, Square* target){
     Square* head = snake->getHead();
     std::vector<Square*> s = snake->getSnake();
     if((head->posx==target->posx)&&(head->posy==target->posy)) return TARGET;
 
-    for(int i=1 ; i<snake->getSnake().size() ; i++){   
+    for(int i=1 ; (size_t)i<snake->getSnake().size() ; i++){   
         if((head->posx==s[i]->posx)&&(head->posy==s[i]->posy)) return SNAKE;   
     } 
     if((head->posx<0)||(head->posx>width-1)|| (head->posy<0)||(head->posy>height-1)) {
@@ -116,7 +110,7 @@ void Playground::border3(Snake* snake){
     }
 
     // distribute position from head
-    for(int i=1 ; i<snake->getSnake().size() ; i++){
+    for(int i=1 ; (size_t)i<snake->getSnake().size() ; i++){
         if((snake->getSnake()[i]->posx<0)||(snake->getSnake()[i]->posx>width-1)||(snake->getSnake()[i]->posy<0)||(snake->getSnake()[i]->posy>height-1)){
             snake->getSnake()[i]->posx = snake->getSnake()[i-1]->posx;
             snake->getSnake()[i]->posy = snake->getSnake()[i-1]->posy;

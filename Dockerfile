@@ -1,21 +1,15 @@
-# Base image with GCC and build tools
-#FROM ubuntu:22.04
-FROM evbauer/mesa_lean:r24.03.1.01
+FROM evbauer/mesa_lean:9793.01
 
 USER root
-
-# Install required tools
-RUN apt update && apt upgrade -y
 
 RUN apt update --fix-missing && apt install -y --no-install-recommends \
         build-essential \  
         gdb \
+        g++ \
         valgrind \
-        clang \
+	vim \
+        tree \
         x11-apps \
-        cmake \
-        nano \
-        git \
         libsdl2-dev 
 
 # Set the working directory in the container

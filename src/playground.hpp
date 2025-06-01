@@ -65,8 +65,6 @@ class Playground{
     std::vector<Square*> getPixels();
     int getWidth();
     int getHeigth();
-    int getRWidth();
-    int getRHeight();
     int getDifficulty();
 };
 
