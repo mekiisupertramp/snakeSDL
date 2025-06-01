@@ -62,7 +62,7 @@ class Playground{
     void update(Snake* snake, Square* target, int box);
     Collision getCollision(Snake* snake, Square* target);
     bool isTargetPosOK(Snake* snake, Square* target);
-    std::vector<Square*> getPixels();
+    const std::vector<Square*>& getPixels();
     int getWidth();
     int getHeigth();
     int getDifficulty();

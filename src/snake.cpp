@@ -50,19 +50,7 @@ void Snake::updatePos(){
         }        
     }
 }
-// void Snake::updatePos(){
-//     int bufPosx;
-//     int bufPosy;
-//     for(int i=snake.size()-1 ; i>0 ; i--){
-//         // current = current-1 or current+1
-//         // copy current for the next block!
-//         bufPosx = snake[i]->posx;
-//         bufPosy = snake[i]->posy;
-//         snake[i]->posx = snake[i-1]->posx;
-//         snake[i]->posy = snake[i-1]->posy;
-//     }
-// }
-std::vector<Square*> Snake::getSnake(){
+const std::vector<Square*>& Snake::getSnake(){
     return snake;
 }
 void Snake::setDir(Direction dir){

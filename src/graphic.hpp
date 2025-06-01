@@ -19,7 +19,7 @@ class Graphic{
     public:
     Graphic(SDL_Window* window, SDL_Renderer* renderer);
     ~Graphic();    
-    void render(std::vector<Square*> pixels, int pixWidth, int pixHeight, int dif);
+    void render(const std::vector<Square*>& pixels, int pixWidth, int pixHeight, int dif);
     void render(Playground* play);
 
 };

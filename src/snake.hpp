@@ -20,7 +20,7 @@ class Snake{
     void updateDir();
     void updatePos();
     void setDir(Direction dir);
-    std::vector<Square*> getSnake();
+    const std::vector<Square*>& getSnake();
     Square* getHead();
     void debug();
 };

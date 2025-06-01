@@ -16,7 +16,7 @@ Playground::~Playground(){
         delete p;
     }
 }
-std::vector<Square*> Playground::getPixels(){return pixels;}
+const std::vector<Square*>& Playground::getPixels(){return pixels;}
 int Playground::getWidth(){return width;}
 int Playground::getHeigth(){return height;}
 int Playground::getDifficulty(){return dif;}

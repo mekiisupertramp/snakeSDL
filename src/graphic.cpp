@@ -11,10 +11,10 @@ Graphic::Graphic(SDL_Window* window, SDL_Renderer* renderer) : window(window), r
 
 Graphic::~Graphic(){}    
 
-void Graphic::render(std::vector<Square*> pixels, int width, int height, int box){   
+void Graphic::render(const std::vector<Square*>& pixels, int width, int height, int box){   
     int x, y;
     SDL_GetWindowSize(window, &x, &y);
-    int pixWidth = x/width;
+     int pixWidth = x/width;
     int pixHeight = y/height;
 
     SDL_Rect rect = {.x=0, .y=0, .w=pixWidth, .h=pixHeight};
