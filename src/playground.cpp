@@ -45,36 +45,35 @@ bool Playground::isTargetPosOK(Snake* snake, Square* target){
 
 void Playground::border0(Snake* snake){
     for(auto s : snake->getSnake()){
-        if((s->posx<0)&&(s->posx>width)) s->activ = false;
-        if((s->posy<0)&&(s->posy>height)) s->activ = false;
+        if((s->posx<0)||(s->posx>width)) s->activ = false;
+        if((s->posy<0)||(s->posy>height)) s->activ = false;
     }
 }
 void Playground::border1(Snake* snake){
     for(auto s : snake->getSnake()){
-        s->posx = (s->posx<0) ? width-1 : s->posx;
-        s->posx = (s->posx>width-1) ? 0: s->posx;
-        s->posy = (s->posy<0) ? height-1 : s->posy;
-        s->posy = (s->posy>height-1) ? 0: s->posy;
+        s->posx = (s->posx + width) % width;
+        s->posy = (s->posy + height) % height;
     }   
 }
 
 void Playground::border2(Snake* snake){
     for(auto b : snake->getSnake()){
-        if((b->posx<0)&&(b->posy==0)){
-            b->posx = width-1;
-            b->posy = height-1;
-            b->dir = LEFT;
-        }
-        if((b->posx<0)&&(b->posy==height-1)){
-            b->posx = width-1;
-            b->posy = 0;
-            b->dir = LEFT;
-        }
-
         if(b->posx<0){
-            b->posx = b->posy;
-            b->posy = 0;
-            b->dir = BOTTOM;
+            if(b->posy==height-1){
+                b->posx = width-1;
+                b->posy = 0;
+                b->dir = LEFT;
+            }else{
+                if(b->posy==0){
+                    b->posx = width-1;
+                    b->posy = height-1;
+                    b->dir = LEFT;
+                }else{
+                    b->posx = b->posy;
+                    b->posy = 0;
+                    b->dir = BOTTOM;
+                }
+            }
         }
         if(b->posx>width-1){
             b->posx = b->posy;
@@ -95,21 +94,23 @@ void Playground::border2(Snake* snake){
 }
 // bug somwhere because [1] get same position as [0]
 void Playground::border3(Snake* snake){
-    Square* head = snake->getHead();    
-    int w = std::rand() % 4;
+    Square* head = snake->getHead();  
+    //   0 → left edge, 1 → bottom edge,
+    //   2 → right edge, 3 → top edge  
+    int edge = std::rand() % 4;
     // random snake's head position
-    // get a new position and avoid previous one
+    // get a new position by avoiding previous one
     if((head->posx<0)||(head->posx>width-1)||(head->posy<0)||(head->posy>height-1)){
-        switch (w){
-            case 0: head->posx = 0; head->dir = RIGHT; do{w = std::rand()%height;}while(w == head->posy); head->posy=w; break;
-            case 1: head->posy = height-1; head->dir = TOP; do{w = std::rand() % width;}while(w == head->posx); head->posx=w; break;
-            case 2: head->posx = width-1; head->dir = LEFT; do{w = std::rand()%height;}while(w == head->posy); head->posy=w; break;
-            case 3: head->posy = 0; head->dir = BOTTOM; do{w = std::rand()%width;}while(w ==head->posx); head->posx=w; break;            
+        switch (edge){
+            case 0: head->posx = 0; head->dir = RIGHT; do{edge = std::rand()%height;}while(edge == head->posy); head->posy=edge; break;
+            case 1: head->posy = height-1; head->dir = TOP; do{edge = std::rand() % width;}while(edge == head->posx); head->posx=edge; break;
+            case 2: head->posx = width-1; head->dir = LEFT; do{edge = std::rand()%height;}while(edge == head->posy); head->posy=edge; break;
+            case 3: head->posy = 0; head->dir = BOTTOM; do{edge = std::rand()%width;}while(edge ==head->posx); head->posx=edge; break;            
             default: break;
         }
     }
 
-    // distribute position from head
+    // distribute position
     for(int i=1 ; (size_t)i<snake->getSnake().size() ; i++){
         if((snake->getSnake()[i]->posx<0)||(snake->getSnake()[i]->posx>width-1)||(snake->getSnake()[i]->posy<0)||(snake->getSnake()[i]->posy>height-1)){
             snake->getSnake()[i]->posx = snake->getSnake()[i-1]->posx;
@@ -163,30 +164,13 @@ void Playground::update(Snake* snake){
 }
 
 void Playground::update(Snake* snake, Square* target){  
-    snake->updatePos();  
-    snake->updateDir();
-    bordersManagement(snake,dif);
-#ifdef DEBUG
-    snake->debug();
-#endif
+    update(snake);
     for(auto p: pixels){
         if((p->posx==target->posx)&&(p->posy==target->posy)){
             p->activ=true;
             p->r = target->r;
             p->g = target->g;
             p->b = target->b;
-        }else{
-            p->activ = false;
         }
-    }
-    for(auto s: snake->getSnake()){
-        if(s->posx<0) break; // prevent bad access to pixels
-        if(s->posy<0) break;
-        if(s->posx>width-1) break;
-        if(s->posy>height-1) break;
-        pixels[s->posx+s->posy*width]->activ = s->activ;
-        pixels[s->posx+s->posy*width]->r = s->r;
-        pixels[s->posx+s->posy*width]->g = s->g;
-        pixels[s->posx+s->posy*width]->b = s->b;        
     }
 }
