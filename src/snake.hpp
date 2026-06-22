@@ -12,9 +12,13 @@ class Snake{
     private:
     std::vector<Square*> snake;
     std::vector<Direction> dirs;
+    int bodyR;
+    int bodyG;
+    int bodyB;
     
     public:
     Snake();
+    Snake(int x, int y, Direction dir, int headR, int headG, int headB, int bodyR, int bodyG, int bodyB);
     ~Snake();    
     void addBlock();
     void updateDir();

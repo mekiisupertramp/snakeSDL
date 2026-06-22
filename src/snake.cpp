@@ -4,11 +4,18 @@
 #define DEBUG
 
 
-Snake::Snake(){
+Snake::Snake():bodyR(RSNAKE),bodyG(GSNAKE),bodyB(BSNAKE){
     snake.push_back(new Square(6,3,RIGHT));
-    snake[0]->r = RSNAKE2;    
-    snake[0]->g = GSNAKE2;    
-    snake[0]->b = BSNAKE2;    
+    snake[0]->r = RSNAKE2;
+    snake[0]->g = GSNAKE2;
+    snake[0]->b = BSNAKE2;
+}
+
+Snake::Snake(int x, int y, Direction dir, int headR, int headG, int headB, int bodyR, int bodyG, int bodyB):bodyR(bodyR),bodyG(bodyG),bodyB(bodyB){
+    snake.push_back(new Square(x, y, dir));
+    snake[0]->r = headR;
+    snake[0]->g = headG;
+    snake[0]->b = headB;
 }
 
 Snake::~Snake(){
@@ -21,25 +28,27 @@ Snake::~Snake(){
 Square* Snake::getHead(){return snake[0];}
 void Snake::addBlock(){  
     Square* tail = snake[snake.size()-1];
+    Square* block = nullptr;
     switch(tail->dir){
         case TOP:
-        snake.push_back(new Square(tail->posx,tail->posy+1,tail->dir));
+        block = new Square(tail->posx,tail->posy+1,tail->dir);
         break;
         case BOTTOM:
-        snake.push_back(new Square(tail->posx,tail->posy-1,tail->dir));
+        block = new Square(tail->posx,tail->posy-1,tail->dir);
         break;
         case RIGHT:
-        snake.push_back(new Square(tail->posx-1,tail->posy,tail->dir));
+        block = new Square(tail->posx-1,tail->posy,tail->dir);
         break;
         case LEFT:
-        snake.push_back(new Square(tail->posx+1,tail->posy,tail->dir));
+        block = new Square(tail->posx+1,tail->posy,tail->dir);
         break;
     }
+    block->r = bodyR;
+    block->g = bodyG;
+    block->b = bodyB;
+    snake.push_back(block);
 }
-// if each pos = &pos-1 => direction would be necessary only for the head no?
-// can't manage border properly like this because blocks go out of bounce
-// would be preferable that each current block gets the position of the next
-// from tail to head
+
 void Snake::updatePos(){   
     for(auto s : snake){
         switch(s->dir){
