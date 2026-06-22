@@ -15,6 +15,7 @@
 #include <ctime>
 #include "playground.hpp"
 #include "graphic.hpp"
+#include "bot.hpp"
 
 
 // default values
@@ -91,15 +92,21 @@ int main(int argc, char* argv[]) {
 
     Playground* play = new Playground(w,h,difficulty);
     Snake* snake = new Snake();
+    Snake* bot = new Snake(w-3,h-4,LEFT,RSNAKE3,GSNAKE3,BSNAKE3,RSNAKE4,GSNAKE4,BSNAKE4);
     Graphic* graph = new Graphic(window,renderer);
     int points = 0;
+    int botPoints = 0;
     std::srand(std::time(nullptr)); 
     Square* b = new Square(std::rand() % w, std::rand() % h);
     b->activ = true;
     b->r = RTARG;
     b->g = GTARG;
     b->b = BTARG;
-    play->update(snake,b);
+    while(!play->isTargetPosOK(snake,bot,b)){
+        b->posx = std::rand() % w;
+        b->posy = std::rand() % h;
+    }
+    play->update(snake,bot,b);
 
 
     SDL_Event e;
@@ -132,11 +139,14 @@ int main(int argc, char* argv[]) {
             }
         }
         if(cpt>5){
-            play->update(snake,b);
-            if(play->getCollision(snake,b) == TARGET){
+            bot->setDir(getBotNextDirection(bot,snake,b,play));
+            play->update(snake,bot,b);
+            Collision playerCollision = play->getCollision(snake,bot,b);
+            Collision botCollision = play->getCollision(bot,snake,b);
+            if(playerCollision == TARGET){
                 snake->addBlock(); 
                 points++;         
-                while(!play->isTargetPosOK(snake,b)){
+                while(!play->isTargetPosOK(snake,bot,b)){
                     b->posx = std::rand() % w;
                     b->posy = std::rand() % h;
                 }
@@ -145,14 +155,34 @@ int main(int argc, char* argv[]) {
 #endif
                 graph->render(play->getPixels(),w,h,difficulty);
             }else{
-                if(play->getCollision(snake,b) == SNAKE) {
-                    cout << "Game over! You bit yourself!" << endl;
-                    cout << "You won " << points << " points." << endl;
+                if(botCollision == TARGET){
+                    bot->addBlock();
+                    botPoints++;
+                    while(!play->isTargetPosOK(snake,bot,b)){
+                        b->posx = std::rand() % w;
+                        b->posy = std::rand() % h;
+                    }
+#ifdef DEBUG
+                    cout << "target x: " << b->posx << ", y: " << b->posy << endl;
+#endif
+                    graph->render(play->getPixels(),w,h,difficulty);
+                }else if((playerCollision == SNAKE) || (botCollision == SNAKE)) {
+                    cout << "Game over! Snake touched!" << endl;
+                    if(points > botPoints){
+                        cout << "You win!" << endl;
+                    }else{
+                        if(points < botPoints){
+                            cout << "You lose!" << endl;
+                        }else{
+                            cout << "It's a tie!" << endl;
+                        }
+                    }
+                    cout << "You won " << points << " points. Bot won " << botPoints << " points." << endl;
                     running = false;
                 }else{
-                    if(play->getCollision(snake,b) == WALL){
+                    if((playerCollision == WALL) || (botCollision == WALL)){
                         cout << "Game over! Wall touched!" << endl;
-                        cout << "You won " << points << " points." << endl;
+                        cout << "You won " << points << " points. Bot won " << botPoints << " points." << endl;
                         running = false;
                     }else{
                         graph->render(play->getPixels(),w,h,difficulty);
@@ -166,6 +196,7 @@ int main(int argc, char* argv[]) {
     }    
 
     delete snake;
+    delete bot;
     delete play;
     delete b;
     delete graph;
