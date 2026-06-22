@@ -42,6 +42,21 @@ bool Playground::isTargetPosOK(Snake* snake, Square* target){
     }
     return true;
 }
+bool Playground::isTargetPosOK(Snake* snake, Snake* bot, Square* target){
+    return isTargetPosOK(snake, target) && isTargetPosOK(bot, target);
+}
+
+Collision Playground::getCollision(Snake* snake, Snake* otherSnake, Square* target){
+    Collision collision = getCollision(snake, target);
+    if(collision != NONE) return collision;
+
+    Square* head = snake->getHead();
+    for(auto s : otherSnake->getSnake()){
+        if((head->posx==s->posx)&&(head->posy==s->posy)) return SNAKE;
+    }
+
+    return NONE;
+}
 
 void Playground::border0(Snake* snake){
     for(auto s : snake->getSnake()){
@@ -150,6 +165,11 @@ void Playground::update(Snake* snake){
     for(auto p: pixels){
         p->activ=false;
     }
+    drawSnake(snake);
+     
+}
+
+void Playground::drawSnake(Snake* snake){
     for(auto s: snake->getSnake()){
         if(s->posx<0) break; // prevent bad access to pixels
         if(s->posy<0) break;
@@ -160,11 +180,36 @@ void Playground::update(Snake* snake){
         pixels[s->posx+s->posy*width]->g = s->g;
         pixels[s->posx+s->posy*width]->b = s->b;        
     }
-     
 }
 
 void Playground::update(Snake* snake, Square* target){  
     update(snake);
+    for(auto p: pixels){
+        if((p->posx==target->posx)&&(p->posy==target->posy)){
+            p->activ=true;
+            p->r = target->r;
+            p->g = target->g;
+            p->b = target->b;
+        }
+    }
+}
+
+void Playground::update(Snake* snake, Snake* bot, Square* target){
+    snake->updatePos();
+    snake->updateDir();
+    bordersManagement(snake,dif);
+    bot->updatePos();
+    bot->updateDir();
+    bordersManagement(bot,dif);
+#ifdef DEBUG
+    snake->debug();
+    bot->debug();
+#endif
+    for(auto p: pixels){
+        p->activ=false;
+    }
+    drawSnake(snake);
+    drawSnake(bot);
     for(auto p: pixels){
         if((p->posx==target->posx)&&(p->posy==target->posy)){
             p->activ=true;

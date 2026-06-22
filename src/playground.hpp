@@ -22,6 +22,14 @@
 #define BSNAKE2  100
 #define GSNAKE2  100
 
+#define RSNAKE3  100
+#define BSNAKE3  0
+#define GSNAKE3  0
+
+#define RSNAKE4  100
+#define BSNAKE4  0
+#define GSNAKE4  50
+
 #define RPLAY   10
 #define BPLAY   10
 #define GPLAY   10
@@ -51,6 +59,7 @@ class Playground{
     void border1(Snake* snake);
     void border2(Snake* snake);
     void border3(Snake* snake);
+    void drawSnake(Snake* snake);
     
 
     public:
@@ -59,9 +68,12 @@ class Playground{
 
     void update(Snake* snake);    
     void update(Snake* snake, Square* target);
+    void update(Snake* snake, Snake* bot, Square* target);
     void update(Snake* snake, Square* target, int difficulty);
     Collision getCollision(Snake* snake, Square* target);
+    Collision getCollision(Snake* snake, Snake* otherSnake, Square* target);
     bool isTargetPosOK(Snake* snake, Square* target);
+    bool isTargetPosOK(Snake* snake, Snake* bot, Square* target);
     const std::vector<Square*>& getPixels();
     int getWidth();
     int getHeigth();
